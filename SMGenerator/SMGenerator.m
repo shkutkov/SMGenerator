@@ -110,23 +110,20 @@ typedef void(^BlockWith10Arguments)(id, id, id, id, id, id, id, id, id, id);
     
     self.result = nil;
 
-    dispatch_semaphore_t hasResult          = _semaphoreHasResult;
-    dispatch_semaphore_t generationContinue = _semaphoreGenerationContinue;
-
     if (self.type == kSMGeneratorSynchronousType) {
         if (!self.started) {
             [self startBlockAsynchroniously];
         } else {
-            dispatch_semaphore_signal(generationContinue);
+            dispatch_semaphore_signal(self.semaphoreGenerationContinue);
         }
         
-        dispatch_semaphore_wait(hasResult, DISPATCH_TIME_FOREVER);
+        dispatch_semaphore_wait(self.semaphoreHasResult, DISPATCH_TIME_FOREVER);
     } else {
         if (!self.started) {
             [self startBlockAsynchroniously];
         }
-        dispatch_semaphore_signal(generationContinue);
-        dispatch_semaphore_wait(hasResult, DISPATCH_TIME_FOREVER);
+        dispatch_semaphore_signal(self.semaphoreGenerationContinue);
+        dispatch_semaphore_wait(self.semaphoreHasResult, DISPATCH_TIME_FOREVER);
     }
 
     if (self.result == nil) {
@@ -153,27 +150,30 @@ typedef void(^BlockWith10Arguments)(id, id, id, id, id, id, id, id, id, id);
     
     __weak __typeof(self) weakSelf = self;
     
-    SMGeneratorCalculationType type = self.type;
     dispatch_semaphore_t hasResult = self.semaphoreHasResult;
     dispatch_semaphore_t generationContinue = self.semaphoreGenerationContinue;
     
-    self.yieldBlock = ^(id result) {
-        if (type == kSMGeneratorAsynchronousType) {
-            dispatch_semaphore_wait(generationContinue, DISPATCH_TIME_FOREVER);
-        }
-        
-        [weakSelf setResult:result];
-        
-        if (type == kSMGeneratorSynchronousType) {
+    if (self.type == kSMGeneratorSynchronousType) {
+        self.yieldBlock = ^(id result) {
+            [weakSelf setResult:result];
+            
             dispatch_semaphore_signal(hasResult);
             dispatch_semaphore_wait(generationContinue, DISPATCH_TIME_FOREVER);
-        } else {
+            
+            return (BOOL)([weakSelf queue] != nil);
+        };
+    } else {
+        self.yieldBlock = ^(id result) {
+            dispatch_semaphore_wait(generationContinue, DISPATCH_TIME_FOREVER);
+            
+            [weakSelf setResult:result];
+            
             dispatch_semaphore_signal(hasResult);
-        }
         
-        return (BOOL)([weakSelf queue] != nil);
-    };
-    
+            return (BOOL)([weakSelf queue] != nil);
+        };
+    }
+
     id generatorBlock = self.generatorBlock;
     NSArray *args     = self.arguments;
     
