@@ -107,14 +107,14 @@ typedef NS_ENUM(NSInteger, SMGeneratorCalculationType) {
  * @method next
  *
  * @abstract
- * Produces next generator value
+ * Produces next value
  *
  * @discussion
- * This method waits while generator block produced next value
- * If generator is finished, then method returns nil
+ * This method waits while next value will be procesed by external block
+ * If external block is ended, this method returns nil
  *
  * @result
- * Next generated object or nil
+ * Next generated value or nil
  */
 - (id)next;
 
