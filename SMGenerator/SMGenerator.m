@@ -95,6 +95,8 @@ typedef void(^BlockWith10Arguments)(id, id, id, id, id, id, id, id, id, id);
     [self cleanUp];
 }
 
+#pragma mark - Public Methods
+
 - (void)setGeneratorBlock:(id)block withArguments:(NSArray *)arguments
 {
     //TODO: check that arguments of block matche to passed arguments
