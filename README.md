@@ -2,7 +2,7 @@
 
 ## Overview
 
-As you might know Objecteve-C doesn't support [generators](http://en.wikipedia.org/wiki/Generator_(computer_science%29) natively, but they may be useful to express some ideas. For example Python has such support and sometimes they are used [very intensively](http://www.dabeaz.com/generators/). The simplest generator that make any sense in Python looks like this:
+As you might know Objecteve-C doesn't support [generators](http://en.wikipedia.org/wiki/Generator_(computer_science)) natively, but they may be useful to express some ideas. For example Python has such support and sometimes they are used [very intensively](http://www.dabeaz.com/generators/). The simplest generator that make any sense in Python looks like this:
 
 ```python
 def countfrom(n):
