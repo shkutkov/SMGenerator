@@ -327,7 +327,7 @@ All code related all tests (iOS, OSX) you can find [in this project on Github](h
 
 As you can see SMGenerator both synchronous and asynchrous version are loosers in this synthetic test.
 
-#### Test #2: Printing numbers from 1 to 100000 to the console
+#### Test #2: Printing numbers from 1 to 1000 to the console
 
 Let's take the same implementation and just print 1000 values to the console. 
 
