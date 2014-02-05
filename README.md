@@ -368,6 +368,11 @@ SMGenerator offers two ways of passing value into the user block: via argument o
 * In the real world code all generators have similar performance.
 * Using asynchronous version of SMGenerator you can truly simple get very fast and efficient generator.
 
+
+## How start using SMGenerator
+
+Add `pod 'SMGenerator'` to your Podfile or add manually 2 files SMGenerator.h, SMGenerator.m to your project.
+
 If you have any questions, suggestion or patches contact me at shkutkov@gmail.com.
 
 ## Licence
