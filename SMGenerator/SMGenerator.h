@@ -110,7 +110,7 @@ typedef NS_ENUM(NSInteger, SMGeneratorCalculationType) {
  * Produces next value
  *
  * @discussion
- * This method waits while next value will be procesed by external block
+ * This method waits while next value will be processed by external block
  * If external block is ended, this method returns nil
  *
  * @result

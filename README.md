@@ -2,7 +2,7 @@
 
 ## Overview
 
-As you might know Objecteve-C doesn't support [generators](http://en.wikipedia.org/wiki/Generator_(computer_science)) natively, but they may be useful to express some ideas. For example Python has such support and sometimes they are used [very intensively](http://www.dabeaz.com/generators/). The simplest generator that make any sense in Python looks like this:
+As you might know Objective-C doesn't support [generators](http://en.wikipedia.org/wiki/Generator_(computer_science)) natively, but they may be useful to express some ideas. For example Python has such support and sometimes they are used [very intensively](http://www.dabeaz.com/generators/). The simplest generator that make any sense in Python looks like this:
 
 ```python
 def countfrom(n):
@@ -11,7 +11,7 @@ def countfrom(n):
         n += 1
 ```
         
-yield statement is similar to return in regular function. The difference is that generator state is saved and on the next call it will be restored and execution will continue (rather that started at the the top as in regular functions).
+yield statement is similar to return in regular function. The difference is that generator state is saved and on the next call it will be restored and execution will continue (rather that started at the top as in regular functions).
 
 Mike Ash in his wonderful blog a long time ago [discussed this topic](https://mikeash.com/pyblog/friday-qa-2009-10-30-generators-in-objective-c.html). He suggested [a solution for creating generators in Objective-C](https://github.com/mikeash/MAGenerator). Similar technic was used in [EXTCoroutine](https://github.com/jspahrsummers/libextobjc/blob/master/extobjc/EXTCoroutine.h) from [libextobjc](https://github.com/jspahrsummers/libextobjc).
 
@@ -88,7 +88,7 @@ SMGenerator has a next method:
  * Produces next value
  *
  * @discussion
- * This method waits while next value will be procesed by external block
+ * This method waits while next value will be processed by external block
  * If external block is ended, this method returns nil
  *
  * @result
@@ -119,9 +119,9 @@ SMGenerator *generator = SM_GENERATOR(^{
 
 #### More technical details
 
-SMGenerator uses [GCD](http://en.wikipedia.org/wiki/Grand_Central_Dispatch) to run user block on its own queue. Thus this block works in another thread and synchronization with the orignal one (not only main thread, it maybe any thread that created your generator) are achived using semaphores. Actually user code works only when the orignal thread is blocked:
+SMGenerator uses [GCD](http://en.wikipedia.org/wiki/Grand_Central_Dispatch) to run user block on its own queue. Thus this block works in another thread and synchronization with the original one (not only main thread, it maybe any thread that created your generator) are achieved using semaphores. Actually user code works only when the original thread is blocked:
 
-1. We ask SMGenerator to get new value (e.g. senging next message to instance)
+1. We ask SMGenerator to get new value (e.g. sending next message to instance)
 1. SMGenerator resumes user block and waits for result
 1. User block starts working in the another thread and when result is ready it notify SMGenerator and stop its execution
 1. SMGenerator receives new value and returns it to original thread
@@ -140,7 +140,7 @@ SMGenerator *generator = SM_GENERATOR(^{
 
 #### One big step forward
 
-Probably, after reading previous section you said: "Stop, but what if we calculate next value in asynchronous manner, so when we ask generator about next value it simply returns already producessed one". And this is reasonable remark. Acutally you can do it with SMGenerator! Just use SM_ASYNC_GENERATOR instead of SM_GENERATOR. This might be really big step fordard in terms of performance for heavy generators. Our previous example rewritten in asynchronous manner looks like:
+Probably, after reading previous section you said: "Stop, but what if we calculate next value in asynchronous manner, so when we ask generator about next value it simply returns already produced one". And this is reasonable remark. Acutally you can do it with SMGenerator! Just use SM_ASYNC_GENERATOR instead of SM_GENERATOR. This might be really big step forward in terms of performance for heavy generators. Our previous example rewritten in asynchronous manner looks like:
 
 ```objc
 SM_ASYNC_GENERATOR(^(NSNumber *n) {
@@ -151,18 +151,18 @@ SM_ASYNC_GENERATOR(^(NSNumber *n) {
 }, (@1));
 ```
 
-But you should be careful with SM_ASYNC_GENERATOR, because of its asynchronism. Using __block variables or modify external object inside SM_ASYNC_GENERATOR is a potentially dangerous! 
+But you should be careful with SM_ASYNC_GENERATOR, because of its anisochronous logic. Using __block variables or modify external object inside SM_ASYNC_GENERATOR is a potentially dangerous! 
 
-## Caviets and limitations
+## Caveats and limitations
 
-It's normal that implementation of any idea has its own caviets. So let's highlight ones of SMGenerator
+It's normal that implementation of any idea has its own caveats. So let's highlight ones of SMGenerator
 
 * User block cannot take primitive types as arguments, so use Objective-C objects (custom object, NSString, NSNumber, NSValue)
 * It is possible to use return statement inside user block, but this stops generator (nil will be returned, if you send "next" message to generator)
 * If user block takes some arguments, they must be passed into SM_GENERATOR/SM_ASYNC_GENERATOR, otherwise you'll receive a runtime error. So don't forget about them.
 * User block have to yield only Objective-C object. So use [Objective-c literals](http://clang.llvm.org/docs/ObjectiveCLiterals.html) if necessary.
 * SMGenerator is based on GCD, thus it has limitations related with that. On iOS 6/7 you cannot have more that 512 **active** generators. It's a rather big number, but it worth to mention.
-* In case of SM_ASYNC_GENERATOR be careful when modifing external object or using __block variables
+* In case of SM_ASYNC_GENERATOR be careful when modifying external object or using __block variables
 * SMGenerator must be built with ARC and targeting either iOS 6.0 and above, or Mac OS 10.8 Mountain Lion and above.
 
 
@@ -312,7 +312,7 @@ What is the price of using generators and especially SMGenerator?
 
 Let's do some tests and compare synchronous and asynchronous SMGenerator, MAGenerator, EXTCoroutine and the same task implemented without generator at all.
 
-For each test we measure each implementation execution 10 times and than exclude 2 maximum and 2 minumum values and then calculate median. 
+For each test we measure each implementation execution 10 times and than exclude 2 maximum and 2 minimum values and then calculate median. 
 All code related all tests (iOS, OSX) you can find [in this project on Github](https://github.com/shkutkov/ObjectiveCGeneratorsPerformance). You can grab the project and run it by yourself. I've run iOS test on iOS Simulator and iPhone 5, OSX tests on my MacBookPro 13" (2,26Gh Intel Core 2 Duo).
 
 #### Test #1: Generating numbers from 1 to 100000
@@ -325,7 +325,7 @@ All code related all tests (iOS, OSX) you can find [in this project on Github](h
 | EXTCoroutine | 0.039936 | 0.116216 | 0.003566 |
 | Without generator| 0.002214 | 0.010248 |0.001619|
 
-As you can see SMGenerator both synchronous and asynchrous version are loosers in this synthetic test.
+As you can see SMGenerator both synchronous and asynchrous version are losers in this synthetic test.
 
 #### Test #2: Printing numbers from 1 to 1000 to the console
 
@@ -339,7 +339,7 @@ Let's take the same implementation and just print 1000 values to the console.
 | EXTCoroutine | 0.646062 | 0.581865 | 0.244638 |
 | Without generator| 0.639307 | 0.562586 | 0.214950 |
 
-As you can see in this example there is almostly no difference between SMGenerator and other implementation. 
+As you can see in this example there is almost no difference between SMGenerator and other implementation. 
 
 Let's look at the last example with heave calculations. 
 
@@ -359,16 +359,16 @@ In this example we simulate the case when value generation takes some time and t
 
 ### Passing values into generator block: arguments vs. closure
 
-SMGenerator offers two ways of passing value into the user block: via argument or just using variable from outer scope. The first variant is more robust (especially with asynchronous version) and more explaining. But moreover it's a little bit more efficient (acording to performance test results, which are not presented here).
+SMGenerator offers two ways of passing value into the user block: via argument or just using variable from outer scope. The first variant is more robust (especially with asynchronous version) and more explaining. But moreover it's a little bit more efficient (according to performance test results, which are not presented here).
 
 ## Conclusion
 
 * Using generators can have slight impact on you app performance, so choose them wisely.
 * SMGenerator suggests another way for creating generators in Objective-C. It has simple and neat syntax.
 * In the real world code all generators have similar performance.
-* Using asynchronous version of SMGenerator you can trully simple get very fast and efficient generator.
+* Using asynchronous version of SMGenerator you can truly simple get very fast and efficient generator.
 
-If you have any questions, sugestion or patches contact me at shkutkov@gmail.com.
+If you have any questions, suggestion or patches contact me at shkutkov@gmail.com.
 
 ## Licence
 
