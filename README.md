@@ -379,3 +379,7 @@ If you have any questions, suggestion or patches contact me at shkutkov@gmail.co
 
 SMGenerator is released under an MIT license. For the full, legal license, see the LICENSE file. Use in any and every sort of project is encouraged, as long as the terms of the license are followed (and they're easy!).
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/shkutkov/smgenerator/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
